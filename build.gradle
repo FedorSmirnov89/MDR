@@ -1,0 +1,68 @@
+buildscript {
+	repositories { jcenter() }
+	dependencies { classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.1' }
+}
+
+plugins { id "org.sonarqube" version "2.7" }
+
+
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'eclipse'
+apply plugin: 'maven'
+apply plugin: 'jacoco'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+mainClassName = 'org.opt4j.core.start.Opt4J'
+
+group 'insularWaste'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+	maven {
+		name "jitpack"
+		url 'https://jitpack.io'
+	}
+
+	mavenCentral()
+}
+
+dependencies {
+	// opt4j
+	implementation 'com.github.felixreimann.opt4j:opt4j-benchmarks:acfb25f9a8'
+	implementation 'com.github.felixreimann.opt4j:opt4j-optimizers:acfb25f9a8'
+	implementation 'com.github.felixreimann.opt4j:opt4j-tutorial:acfb25f9a8'
+	implementation 'com.github.felixreimann.opt4j:opt4j-core:acfb25f9a8'
+	implementation 'com.github.felixreimann.opt4j:opt4j-operators:acfb25f9a8'
+	implementation 'com.github.felixreimann.opt4j:opt4j-satdecoding:acfb25f9a8'
+	implementation 'com.github.felixreimann.opt4j:opt4j-viewer:acfb25f9a8'
+	// opendse
+	compile 'com.github.FedorSmirnov89.opendse:build:-SNAPSHOT'
+	compile files('libs/multiCore.jar') // multicore experiment setup
+
+	compile group: 'com.google.code.gson', name: 'gson', version: '2.7' // needed for the invasic part (reading in the spec information)
+
+	testCompile group: 'junit', 		name: 'junit', 		version: '4.+'
+	testCompile group: 'org.mockito',     name: 'mockito-all',     version: '1.9.5'
+}
+
+shadowJar {
+	baseName = 'shadow'
+	classifier = null
+	version = null
+}
+
+jacocoTestReport {
+	reports {
+		xml.enabled true
+		html.enabled true
+	}
+}
+
+sonarqube {
+	properties { property 'sonar.coverage.exclusions', "**/example/*,**/module/*" }
+}
+
+
